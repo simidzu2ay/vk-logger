@@ -15,8 +15,5 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
     "strictPropertyInitialization": false,
-  },
-  "include": [
-    "./src/**/*"
-  ]
+  }
 }

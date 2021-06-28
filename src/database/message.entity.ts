@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Attachment } from './attachment.entity';
 
 @Entity()
 export class Message {
@@ -8,6 +9,15 @@ export class Message {
     @Column()
     fromId: number;
 
-    @Column()
+    @Column({ nullable: true })
     text: string;
+
+    @Column()
+    peerId: number;
+
+    @Column({ nullable: true })
+    replyTo: number;
+
+    @OneToMany(() => Attachment, a => a.id)
+    attachments: Attachment[];
 }
