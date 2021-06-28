@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { Logger, LogLevel } from './classes/logger.class';
 import { attachmentRepository, messagesRepository } from './database';
 import { getAttachments } from './utils/get-attachments.util';
+import { Attachment } from './database/attachment.entity';
 
 Logger.setLevel(process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.ALL);
 
@@ -15,15 +16,30 @@ vk.updates.on('message_new', async (context, next) => {
 });
 
 vk.updates.on('message_new', async context => {
-    const attachments = getAttachments(context.attachments);
+    const attachments: Attachment[] = [];
+
+    if (context.attachments.length) {
+        const msg = await vk.api.messages.getById({
+            message_ids: context.id
+        });
+        attachments.push(...getAttachments(msg.items[0].attachments ? msg.items[0].attachments : []));
+    }
+
+    const replyTo = await messagesRepository.findOne({
+        where: {
+            peerId: context.peerId,
+            converstationMessageId: context.replyMessage?.conversationMessageId
+        }
+    });
 
     const message = messagesRepository.create({
         attachments,
+        replyTo,
         id: context.id,
         fromId: context.senderId,
         text: context.text,
-        replyTo: context.replyMessage?.id,
-        peerId: context.peerId
+        peerId: context.peerId,
+        converstationMessageId: context.conversationMessageId
     });
 
     await messagesRepository.save(message);

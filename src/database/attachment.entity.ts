@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AttachmentType } from 'vk-io';
 import { Message } from './message.entity';
 
@@ -13,8 +13,12 @@ export class Attachment {
     })
     type: AttachmentType;
 
+    @Column()
+    url: string;
+
     @ManyToOne(() => Message, m => m.attachments, {
         cascade: true
     })
+    @JoinColumn()
     message: Message;
 }

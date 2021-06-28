@@ -20,9 +20,9 @@ createConnection({
     password: cfg.database.password
 })
     .then(connection => {
-        Logger.info('Успешное подключение к базе данных');
         messagesRepository = connection.getRepository(Message);
         attachmentRepository = connection.getRepository(Attachment);
+        Logger.info('Успешное подключение к базе данных');
     })
     .catch(e => {
         Logger.error('Ошибка при подключении к базе данных', e);
