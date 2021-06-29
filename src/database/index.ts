@@ -4,10 +4,12 @@ import { createConnection, Repository } from 'typeorm';
 import { Message } from './message.entity';
 import { Attachment } from './attachment.entity';
 import { History } from './history.entity';
+import { Forward } from './forwards.entity';
 
 export let messagesRepository!: Repository<Message>;
 export let attachmentRepository!: Repository<Attachment>;
 export let historyRepository!: Repository<History>;
+export let forwardRepository!: Repository<Forward>;
 
 createConnection({
     database: cfg.database.name,
@@ -25,6 +27,7 @@ createConnection({
         messagesRepository = connection.getRepository(Message);
         attachmentRepository = connection.getRepository(Attachment);
         historyRepository = connection.getRepository(History);
+        forwardRepository = connection.getRepository(Forward);
         Logger.info('Успешное подключение к базе данных');
     })
     .catch(e => {

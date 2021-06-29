@@ -1,13 +1,17 @@
 import { userId, vk } from './consts';
-import 'reflect-metadata';
 import { Logger, LogLevel } from './classes/logger.class';
 import { attachmentRepository, historyRepository, messagesRepository } from './database';
 import { getAttachments } from './utils/get-attachments.util';
 import { Attachment } from './database/attachment.entity';
+import { Forward } from './database/forwards.entity';
+import { getForwards } from './utils/get-forwards.util';
+import { saveForwards } from './utils/save-forwards.util';
+import 'reflect-metadata';
 
 Logger.setLevel(process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.ALL);
 
-vk.updates.on('message_new', async (context, next) => {
+// @ts-ignore
+vk.updates.on(['message_new', 'message_flags', 'message_edit'], async (context, next) => {
     try {
         await next();
     } catch (e) {
@@ -17,12 +21,17 @@ vk.updates.on('message_new', async (context, next) => {
 
 vk.updates.on('message_new', async context => {
     const attachments: Attachment[] = [];
+    const forwards: Forward[] = [];
 
-    if (context.attachments.length) {
-        const msg = await vk.api.messages.getById({
+    if (context.attachments.length || context.hasForwards) {
+        const obj = await vk.api.messages.getById({
             message_ids: context.id
         });
-        attachments.push(...getAttachments(msg.items[0].attachments ? msg.items[0].attachments : []));
+
+        const msg = obj.items[0];
+
+        attachments.push(...getAttachments(msg.attachments ? msg.attachments : []));
+        forwards.push(...getForwards(msg.fwd_messages ? msg.fwd_messages : []));
     }
 
     const replyTo = await messagesRepository.findOne({
@@ -41,7 +50,6 @@ vk.updates.on('message_new', async context => {
         peerId: context.peerId,
         converstationMessageId: context.conversationMessageId
     });
-
     await messagesRepository.save(message);
     await attachmentRepository.save(
         attachments.map(a => {
@@ -49,12 +57,18 @@ vk.updates.on('message_new', async context => {
             return a;
         })
     );
+    await saveForwards(
+        forwards.map(f => {
+            f.message = message;
+            return f;
+        })
+    );
 });
 
 vk.updates.on('message_flags', async context => {
     const message = await messagesRepository.findOne(context.id);
 
-    if (!message) return;
+    if (!message) return Logger.warn('Удаление сообщения которого нет в БД, игнорирую');
     if (!context?.isDeletedForAll) return;
 
     message.isDeleted = true;
@@ -63,6 +77,7 @@ vk.updates.on('message_flags', async context => {
 
 vk.updates.on('message_edit', async context => {
     const message = await messagesRepository.findOne(context.id);
+    if (!message) return Logger.warn('Изменение сообщения которого нет в БД, игнорирую');
 
     const history = historyRepository.create({
         text: context.text,
@@ -82,6 +97,7 @@ vk.updates.on('message_edit', async context => {
     await attachmentRepository.save(
         attachments.map(a => {
             a.history = history;
+            a.message = message;
             return a;
         })
     );

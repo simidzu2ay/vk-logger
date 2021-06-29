@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 import { Attachment } from './attachment.entity';
+import { Forward } from './forwards.entity';
 
 @Entity()
 @Unique(['converstationMessageId'])
@@ -14,7 +15,7 @@ export class Message {
     fromId: number;
 
     @Column({ nullable: true })
-    text: string;
+    text?: string;
 
     @Column()
     peerId: number;
@@ -26,11 +27,14 @@ export class Message {
 
     @ManyToOne(() => Message, m => m.replies, { nullable: true })
     @JoinColumn({ name: 'replyTo' })
-    replyTo: Message;
+    replyTo?: Message;
 
     @OneToMany(() => Attachment, a => a.message, { cascade: true })
     attachments: Attachment[];
 
     @Column({ default: false })
     isDeleted: boolean;
+
+    @OneToMany(() => Forward, f => f.message, { cascade: true })
+    forwards: Forward[];
 }

@@ -8,7 +8,7 @@ export class History {
     id: number;
 
     @Column({ nullable: true })
-    text: string;
+    text?: string;
 
     @ManyToOne(() => Message)
     message: Message;

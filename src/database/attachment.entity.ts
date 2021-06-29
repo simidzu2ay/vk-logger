@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import { AttachmentType } from 'vk-io';
 import { Message } from './message.entity';
 import { History } from './history.entity';
+import { Forward } from './forwards.entity';
 
 @Entity()
 export class Attachment {
@@ -17,11 +18,14 @@ export class Attachment {
     @Column()
     url: string;
 
-    @ManyToOne(() => Message, m => m.attachments)
+    @ManyToOne(() => Message, m => m.attachments, { nullable: true })
     @JoinColumn()
-    message: Message;
+    message?: Message;
 
     @ManyToOne(() => History, h => h.attachments, { nullable: true })
     @JoinColumn()
-    history: History;
+    history?: History;
+
+    @ManyToOne(() => Forward, f => f.attachments, { nullable: true })
+    forward?: Forward;
 }
