@@ -28,7 +28,7 @@ export class Message {
     @JoinColumn({ name: 'replyTo' })
     replyTo: Message;
 
-    @OneToMany(() => Attachment, a => a.message)
+    @OneToMany(() => Attachment, a => a.message, { cascade: true })
     attachments: Attachment[];
 
     @Column({ default: false })

@@ -8,7 +8,7 @@
     "start:prod": "NODE_ENV=production  npm-run-all start",
     "start:dev": "NODE_ENV=dev npm-run-all start",
     "clear": "rimraf dist",
-    "dev": "npm-run-all clear build start:dev"
+    "dev": "npm-run-all build start:dev"
   },
   "license": "MIT",
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { userId, vk } from './consts';
 import 'reflect-metadata';
 import { Logger, LogLevel } from './classes/logger.class';
-import { attachmentRepository, messagesRepository } from './database';
+import { attachmentRepository, historyRepository, messagesRepository } from './database';
 import { getAttachments } from './utils/get-attachments.util';
 import { Attachment } from './database/attachment.entity';
 
@@ -59,6 +59,32 @@ vk.updates.on('message_flags', async context => {
 
     message.isDeleted = true;
     await messagesRepository.save(message);
+});
+
+vk.updates.on('message_edit', async context => {
+    const message = await messagesRepository.findOne(context.id);
+
+    const history = historyRepository.create({
+        text: context.text,
+        message
+    });
+
+    const attachments: Attachment[] = [];
+
+    if (context.attachments.length) {
+        const msg = await vk.api.messages.getById({
+            message_ids: context.id
+        });
+        attachments.push(...getAttachments(msg.items[0].attachments ? msg.items[0].attachments : []));
+    }
+
+    await historyRepository.save(history);
+    await attachmentRepository.save(
+        attachments.map(a => {
+            a.history = history;
+            return a;
+        })
+    );
 });
 
 vk.updates

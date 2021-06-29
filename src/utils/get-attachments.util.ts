@@ -42,7 +42,7 @@ export const getAttachments = (attachments: MessagesMessageAttachment[]) => {
                 att.url = attachment.url;
                 break;
             case AttachmentType.WALL_REPLY:
-                att.url = `https://vk.com/wall/${attachment.owner_id}_${attachment.post_id}?reply=${attachment.id}`;
+                att.url = `https://vk.com/wall${attachment.owner_id}_${attachment.post_id}?reply=${attachment.id}`;
                 break;
             case AttachmentType.GIFT:
                 att.url = attachment.thumb_256;

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "sourceMap": true,
