@@ -30,4 +30,7 @@ export class Message {
 
     @OneToMany(() => Attachment, a => a.message)
     attachments: Attachment[];
+
+    @Column({ default: false })
+    isDeleted: boolean;
 }

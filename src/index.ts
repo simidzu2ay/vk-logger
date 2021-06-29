@@ -1,4 +1,4 @@
-import { vk } from './consts';
+import { userId, vk } from './consts';
 import 'reflect-metadata';
 import { Logger, LogLevel } from './classes/logger.class';
 import { attachmentRepository, messagesRepository } from './database';
@@ -36,7 +36,7 @@ vk.updates.on('message_new', async context => {
         attachments,
         replyTo,
         id: context.id,
-        fromId: context.senderId,
+        fromId: context.isOutbox ? userId : context.senderId,
         text: context.text,
         peerId: context.peerId,
         converstationMessageId: context.conversationMessageId
@@ -49,6 +49,16 @@ vk.updates.on('message_new', async context => {
             return a;
         })
     );
+});
+
+vk.updates.on('message_flags', async context => {
+    const message = await messagesRepository.findOne(context.id);
+
+    if (!message) return;
+    if (!context?.isDeletedForAll) return;
+
+    message.isDeleted = true;
+    await messagesRepository.save(message);
 });
 
 vk.updates
