@@ -1,11 +1,13 @@
-import { attachmentRepository } from '../database';
 import { AttachmentType } from 'vk-io';
-import { Attachment as DAttachment } from '../database/attachment.entity';
+import { AES } from 'crypto-js';
+import { attachmentRepository } from '../database';
+import { Attachment } from '../database/attachment.entity';
 import { Logger } from '../classes/logger.class';
 import { MessagesMessageAttachment } from 'vk-io/lib/api/schemas/objects';
+import { cfg } from '../config';
 
 export const getAttachments = (attachments: MessagesMessageAttachment[]) => {
-    let attach: DAttachment[] = [];
+    let attach: Attachment[] = [];
 
     for (const { type, ...obj } of attachments) {
         const att = attachmentRepository.create({
@@ -35,7 +37,6 @@ export const getAttachments = (attachments: MessagesMessageAttachment[]) => {
                 att.url = attachment.images[attachment.images.length - 1].url;
                 break;
             case AttachmentType.AUDIO:
-            case AttachmentType.DOCUMENT:
             case AttachmentType.LINK:
             case AttachmentType.DOCUMENT:
             case AttachmentType.GRAFFITI:
@@ -51,7 +52,12 @@ export const getAttachments = (attachments: MessagesMessageAttachment[]) => {
                 Logger.warn('Неизвестный тип вложения', type, attachment);
         }
 
-        if (att.url) attach.push(att);
+        if (att.url) {
+            attach.push({
+                ...att,
+                url: AES.encrypt(att.url, cfg.encryption).toString()
+            });
+        }
     }
 
     return attach;

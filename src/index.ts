@@ -1,3 +1,4 @@
+import { AES } from 'crypto-js';
 import { userId, vk } from './consts';
 import { Logger, LogLevel } from './classes/logger.class';
 import { attachmentRepository, historyRepository, messagesRepository } from './database';
@@ -7,6 +8,7 @@ import { Forward } from './database/forwards.entity';
 import { getForwards } from './utils/get-forwards.util';
 import { saveForwards } from './utils/save-forwards.util';
 import 'reflect-metadata';
+import { cfg } from './config';
 
 Logger.setLevel(process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.ALL);
 
@@ -37,19 +39,22 @@ vk.updates.on('message_new', async context => {
     const replyTo = await messagesRepository.findOne({
         where: {
             peerId: context.peerId,
-            converstationMessageId: context.replyMessage?.conversationMessageId
+            conversationMessageId: context.replyMessage?.conversationMessageId
         }
     });
 
+    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined
+
     const message = messagesRepository.create({
-        attachments,
+        text,
         replyTo,
+        attachments,
         id: context.id,
-        fromId: context.isOutbox ? userId : context.senderId,
-        text: context.text,
         peerId: context.peerId,
-        converstationMessageId: context.conversationMessageId
+        fromId: context.isOutbox ? userId : context.senderId,
+        conversationMessageId: context.conversationMessageId
     });
+
     await messagesRepository.save(message);
     await attachmentRepository.save(
         attachments.map(a => {
@@ -79,8 +84,10 @@ vk.updates.on('message_edit', async context => {
     const message = await messagesRepository.findOne(context.id);
     if (!message) return Logger.warn('Изменение сообщения которого нет в БД, игнорирую');
 
+    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined
+
     const history = historyRepository.create({
-        text: context.text,
+        text,
         message
     });
 

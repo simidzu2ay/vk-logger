@@ -1,14 +1,7 @@
 {
-    "database": {
-        "host": "",
-        "port": "",
-        "name": "",
-        "username": "",
-        "password": "",
-        "cache": false
-    },
     "vk": {
         "token": "",
-        "baseUrl": ""
-    }
+        "baseUrl": "https://api.vk.com/method/"
+    },
+    "encryption": ""
 }

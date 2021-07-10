@@ -1,26 +1,23 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { Attachment } from './attachment.entity';
 import { Forward } from './forwards.entity';
 
 @Entity()
-@Unique(['converstationMessageId'])
 export class Message {
     @PrimaryColumn()
     id: number;
 
     @Column()
-    converstationMessageId: number;
+    fromId: number;
 
     @Column()
-    fromId: number;
+    conversationMessageId: number;
 
     @Column({ nullable: true })
     text?: string;
 
     @Column()
     peerId: number;
-
-    replyToId: number;
 
     @OneToMany(() => Message, m => m.replyTo, { nullable: true })
     replies: Message[];

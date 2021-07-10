@@ -1,0 +1,19 @@
+{
+    "database": "vk-logger",
+    "type": "postgres",
+    "entities": [
+        "dist/**/*.entity.js"
+    ],
+    "migrations": [
+        "dist/migration/**/*.migration.js"
+    ],
+    "synchronize": true,
+    "cache": {
+        "type": "redis",
+        "options": {
+            "host": "localhost",
+            "port": 6379
+        },
+        "duration": 60
+    }
+}
