@@ -8,6 +8,6 @@ export const saveForwards = async (forwards: Forward[], forwardTo?: Forward) => 
             forwardTo
         });
 
-        await saveForwards(forwards, f);
+        await saveForwards(forward.forwards, f);
     }
 };

@@ -7,7 +7,7 @@ export class Forward {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Forward, f => f.forwards, { cascade: true })
+    @ManyToOne(() => Forward, f => f.forwards)
     @JoinColumn({ name: 'forwardTo' })
     forwardTo: Forward;
 
