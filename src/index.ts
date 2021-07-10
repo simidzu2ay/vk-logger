@@ -56,12 +56,6 @@ vk.updates.on('message_new', async context => {
     });
 
     await messagesRepository.save(message);
-    await attachmentRepository.save(
-        attachments.map(a => {
-            a.message = message;
-            return a;
-        })
-    );
     await saveForwards(
         forwards.map(f => {
             f.message = message;
