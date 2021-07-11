@@ -39,12 +39,21 @@ yarn start:prod
         "fromGroup": true
     }
 }
-``` 
+```
 
 ### [ormconfig.json](https://github.com/SimidzuAy/vk-logger/blob/master/ormconfig.json)
 #### Конфиг [typeorm](https://typeorm.io/#/connection-options/) для работы с базой данных
 ❗ По умолчанию используется postgresql 
 
+## 🔐 Расшифровка
+```shell
+yarn decrypt ...[зашифрованный текст]
+# Или
+npm run decrypt ...[зашифрованный текст]
+
+# Пример
+yarn decrypt "TNarst+\+123" "thaalEIiar1"
+```
 
 
 ## 🚩 TODO
