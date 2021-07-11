@@ -58,6 +58,7 @@ vk.updates.on('message_new', async context => {
         attachments,
         id: context.id,
         peerId: context.peerId,
+        date: new Date(context.createdAt * 1000),
         fromId: context.isOutbox ? userId : context.senderId,
         conversationMessageId: context.conversationMessageId
     });

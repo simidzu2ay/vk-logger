@@ -19,6 +19,9 @@ export class Message {
     @Column()
     peerId: number;
 
+    @Column()
+    date: Date;
+
     @OneToMany(() => Message, m => m.replyTo, { nullable: true })
     replies: Message[];
 
