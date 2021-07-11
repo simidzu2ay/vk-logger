@@ -28,7 +28,16 @@ yarn start:prod
         "baseUrl": "https://api.vk.com/method/"
     },
     // Ключ для AES шифрования сообщений
-    "encryption": ""
+    "encryption": "",
+    // Игнор сообщения по..
+    "ignore":  {
+        // PeerId
+        "peer": [],
+        // UserId
+        "user": [],
+        // Сообщение от группы / В лс группы
+        "fromGroup": true
+    }
 }
 ``` 
 

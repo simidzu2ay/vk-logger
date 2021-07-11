@@ -14,6 +14,13 @@ Logger.setLevel(process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel
 
 // @ts-ignore
 vk.updates.on(['message_new', 'message_flags', 'message_edit'], async (context, next) => {
+    const senderId = context.senderId ? context.senderId : context.message?.senderId;
+    const peerId = context.peerId ? context.peerId : context.message?.peerId;
+
+    if (cfg.ignore.user.includes(senderId)) return;
+    if (cfg.ignore.peer.includes(peerId)) return;
+    if (cfg.ignore.fromGroup && (senderId < 0 || peerId < 0)) return;
+
     try {
         await next();
     } catch (e) {
@@ -43,7 +50,7 @@ vk.updates.on('message_new', async context => {
         }
     });
 
-    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined
+    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined;
 
     const message = messagesRepository.create({
         text,
@@ -78,7 +85,7 @@ vk.updates.on('message_edit', async context => {
     const message = await messagesRepository.findOne(context.id);
     if (!message) return Logger.warn('Изменение сообщения которого нет в БД, игнорирую');
 
-    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined
+    const text = context.text ? AES.encrypt(context.text, cfg.encryption).toString() : undefined;
 
     const history = historyRepository.create({
         text,

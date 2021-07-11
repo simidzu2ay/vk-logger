@@ -3,5 +3,10 @@
         "token": "",
         "baseUrl": "https://api.vk.com/method/"
     },
-    "encryption": ""
+    "encryption": "",
+    "ignore":  {
+        "peer": [],
+        "user": [],
+        "fromGroup": true
+    }
 }
