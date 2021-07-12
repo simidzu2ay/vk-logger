@@ -1,12 +1,12 @@
 import { Argument, Command, Option } from 'commander';
 import { FindManyOptions, In } from 'typeorm';
 import Table from 'cli-table3';
-import { AES, enc } from 'crypto-js';
 import { parseIntArrayUtil, parseIntUtil } from '../utils/parse-int.util';
 import { messagesRepository } from '../../dist/database';
-import { cfg } from '../../dist/config';
 import { Message } from '../../dist/database/message.entity';
 import WordWrap from 'wordwrap';
+import { prettyMessageUtil } from '../utils/print-message.util';
+import { prettyMessageObjectUtil } from '../utils/pretty-message-object.util';
 
 const wrap = WordWrap(72, {
     mode: 'hard'
@@ -21,6 +21,7 @@ export const getMessage = new Command('messages')
     .addOption(new Option('-f, --from <number...>', 'User Ids').argParser<number[]>(parseIntArrayUtil))
     .addOption(new Option('--last', 'Get last messages').default(false))
     .addOption(new Option('-d, --deleted', 'Get only deleted messages').default(false))
+    .addOption(new Option('-t, --type <type>', 'format table').choices(['table', 'text']).default('table'))
     .action(async (ids, commandOptions) => {
         let messages: Message[] | null;
         const relations = ['attachments', 'replyTo', 'forwards'];
@@ -76,37 +77,44 @@ export const getMessage = new Command('messages')
         }
 
         if (messages?.length) {
-            const table = new Table({
-                head: ['id', 'fromId', 'text', 'peerId', 'date', 'del', 'has']
-            });
+            const Messages = messages.map(prettyMessageObjectUtil);
 
-            const tMessages = messages.map(m => {
-                const has: string[] = [];
+            if (commandOptions.type === 'table') {
+                const table = new Table({
+                    head: ['id', 'fromId', 'text', 'peerId', 'date', 'del', 'has']
+                });
 
-                if (m.replyTo) has.push('reply');
-                if (m.attachments.length) has.push('attachments');
-                if (m.forwards.length) has.push('forwards');
+                const tMessages = Messages.map(m => {
+                    const has: string[] = [];
 
-                return {
-                    ...m,
-                    text: m.text ? AES.decrypt(m.text, cfg.encryption).toString(enc.Utf8) : '',
-                    date: m.date.toLocaleString('ru-RU'),
-                    has
-                };
-            });
+                    if (m.replyTo) has.push('reply');
+                    if (m.attachments.length) has.push('attachments');
+                    if (m.forwards.length) has.push('forwards');
 
-            table.push(
-                ...tMessages.map(m => [
-                    m.id,
-                    m.fromId,
-                    wrap(m.text),
-                    m.peerId,
-                    m.date,
-                    m.isDeleted,
-                    m.has.length ? m.has.join('|') : 'none'
-                ])
-            );
+                    return {
+                        ...m,
+                        has
+                    };
+                });
 
-            return console.log(table.toString());
+                table.push(
+                    ...tMessages.map(m => [
+                        m.id,
+                        m.fromId,
+                        wrap(m.text),
+                        m.peerId,
+                        m.date,
+                        m.isDeleted,
+                        m.has.length ? m.has.join('|') : 'none'
+                    ])
+                );
+
+                return console.log(table.toString());
+            }
+
+            for (const message of Messages) {
+                const str = prettyMessageUtil(message);
+                console.log(str);
+            }
         } else throw new Error('No messages found');
     });
