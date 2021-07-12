@@ -18,12 +18,14 @@
   "devDependencies": {
     "@types/crypto-js": "^4.0.2",
     "@types/node": "^16.3.1",
+    "@types/wordwrap": "^1.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "cli-table3": "^0.6.0",
     "commander": "^8.0.0",
     "crypto-js": "^4.0.0",
     "pg": "^8.6.0",
@@ -31,6 +33,7 @@
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.0",
     "typeorm": "^0.2.34",
-    "vk-io": "^4.3.1"
+    "vk-io": "^4.3.1",
+    "wordwrap": "^1.0.0"
   }
 }
