@@ -18,9 +18,7 @@ export const prettyMessageUtil = (message: ReturnType<typeof prettyMessageObject
         🚫 Deleted: ${message.isDeleted}
         🏢 Peer: ${message.peerId}
         ⏰ Date: ${message.date}
-        ${reply ? `💬 Reply: ${reply}\n` : ''}
-        ${attachments ? `🌆 Attachments: ${attachments}` : ''}
-    `
+        ${reply ? `💬 Reply: ${reply}\n` : ''}${attachments ? `🌆 Attachments: ${attachments}` : ''}`
         .replace(/^ {8}/gm, '')
-        .replace(/^\s+$/gm, '');
+        .replace(/^\s*$/gm, '');
 };
