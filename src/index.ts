@@ -1,7 +1,7 @@
 import { AES } from 'crypto-js';
 import { userId, vk } from './consts';
 import { Logger, LogLevel } from './classes/logger.class';
-import { attachmentRepository, historyRepository, messagesRepository } from './database';
+import { attachmentRepository, createDBConnection, historyRepository, messagesRepository } from './database';
 import { getAttachments } from './utils/get-attachments.util';
 import { Attachment } from './database/attachment.entity';
 import { Forward } from './database/forwards.entity';
@@ -9,6 +9,8 @@ import { getForwards } from './utils/get-forwards.util';
 import { saveForwards } from './utils/save-forwards.util';
 import 'reflect-metadata';
 import { cfg } from './config';
+
+createDBConnection().then(() => Logger.info('Успешное подключение к базе данных'));
 
 Logger.setLevel(process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.ALL);
 
@@ -76,9 +78,8 @@ vk.updates.on('message_flags', async context => {
     const message = await messagesRepository.findOne(context.id);
 
     if (!message) return Logger.warn('Удаление сообщения которого нет в БД, игнорирую');
-    if (!context?.isDeletedForAll) return;
 
-    message.isDeleted = true;
+    message.isDeleted = context.isDeletedForAll;
     await messagesRepository.save(message);
 });
 

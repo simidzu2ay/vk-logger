@@ -1,15 +1,18 @@
 {
   "name": "vk-logger",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "./dist/index.js",
+  "bin": "bin/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -d",
     "start": "node --enable-source-maps ./dist/index.js",
     "start:prod": "NODE_ENV=production  npm-run-all start",
     "start:dev": "NODE_ENV=dev npm-run-all start",
-    "clear": "rimraf dist",
+    "clear": "rimraf dist bin",
     "dev": "npm-run-all build start:dev",
-    "decrypt": "node ./cli/decrypt.js"
+    "decrypt": "node bin/decrypt.js",
+    "build:cli": "tsc --build tsconfig.cli.json",
+    "preinstall": "npm-run-all build build:cli"
   },
   "license": "MIT",
   "devDependencies": {
@@ -21,6 +24,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "commander": "^8.0.0",
     "crypto-js": "^4.0.0",
     "pg": "^8.6.0",
     "redis": "^3.1.2",

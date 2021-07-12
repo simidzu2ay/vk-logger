@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
-    "strictPropertyInitialization": false,
-  }
+    "strictPropertyInitialization": false
+  },
+  "include": ["./src/**/*"]
 }

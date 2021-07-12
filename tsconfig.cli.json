@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "target": "es5",
+        "module": "commonjs",
+        "importHelpers": true,
+        "strict": true,
+        "outDir": "./bin",
+        "noUnusedLocals": true,
+        "noFallthroughCasesInSwitch": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "./cli",
+        "strictPropertyInitialization": false
+    },
+    "include": ["./cli/**/*"],
+}

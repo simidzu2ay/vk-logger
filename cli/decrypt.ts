@@ -1,5 +1,5 @@
-const { AES, enc } = require('crypto-js');
-const { cfg } = require('../dist/config');
+import { AES, enc } from 'crypto-js';
+import { cfg } from '../dist/config';
 
 for (let i = 2; i < process.argv.length; i++) {
     const text = process.argv[i];
