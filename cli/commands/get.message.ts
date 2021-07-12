@@ -9,6 +9,7 @@ import { Message } from '../../dist/database/message.entity';
 export const getMessage = new Command('messages')
     .addArgument(new Argument('[ids...]', 'Message ids').argParser(parseIntArrayUtil))
     .addOption(new Option('-c, --count <number>').default(10).argParser<number>(parseIntUtil))
+    .addOption(new Option('-o, --offset <number>').default(0).argParser<number>(parseIntUtil))
     .addOption(new Option('-p, --peer <number...>', 'Peer Ids').argParser<number[]>(parseIntArrayUtil))
     .addOption(new Option('--cid <number...>', 'Conversation message ids').argParser<number[]>(parseIntArrayUtil))
     .addOption(new Option('-f, --from <number...>', 'User Ids').argParser<number[]>(parseIntArrayUtil))
@@ -28,6 +29,7 @@ export const getMessage = new Command('messages')
 
             const options: FindManyOptions<Message> = {
                 take: commandOptions.count,
+                skip: commandOptions.offset,
                 where: {},
                 order: {
                     id: commandOptions.last ? 'ASC' : 'DESC'
