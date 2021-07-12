@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import path from 'path';
 
 export interface IgnoreConfig {
     peer: number[];
@@ -17,4 +18,5 @@ export interface Config {
     ignore: IgnoreConfig;
 }
 
-export const cfg: Config = JSON.parse(readFileSync('./config/main.json', 'utf-8'));
+export const cfg: Config = JSON.parse(readFileSync(path.join(__dirname, '..', 'config', 'main.json'), 'utf-8'));
+export const dbCfg = JSON.parse(readFileSync(path.join(__dirname, '..', 'ormconfig.json'), 'utf-8'));
